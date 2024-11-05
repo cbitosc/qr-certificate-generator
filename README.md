@@ -31,7 +31,7 @@ You'll also need:
 
 ```bash
 git clone https://github.com/cbitosc/qr-certificate-generator.git
-cd qr-verifiable-certificate-generator
+cd qr-certificate-generator
 ```
 
 2. Install dependencies:
