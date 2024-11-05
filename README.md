@@ -63,7 +63,7 @@ This command will automatically start both the Next.js frontend and FastAPI back
 
 1. **Prepare Your Template**
 
-    - Create a certificate template with space for text and QR code
+    - Create a certificate template with space for text and a QR code, then export it as a PNG or JPG.
     - Convert the template to SVG format using tools like [Pixelied PNG to SVG Converter](https://pixelied.com/convert/png-converter/png-to-svg)
 
 2. **Setup GitHub Repository**
