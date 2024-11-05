@@ -35,4 +35,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/src/api/static/*
+/src/api/static/data
+/src/api/static/templates
+/src/api/static/qr_code.png
