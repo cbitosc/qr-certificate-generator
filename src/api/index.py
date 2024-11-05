@@ -108,6 +108,11 @@ def generate_certificates_task(
     output_directory_path = os.path.join(base_dir, output_directory)
     output_certificates_path = os.path.join(base_dir, output_directory, "certificates")
     output_docs_path = os.path.join(base_dir, output_directory, "docs" )
+    os.makedirs(output_directory_path, exist_ok=True)
+    os.makedirs(output_certificates_path, exist_ok=True)
+    os.makedirs(output_docs_path, exist_ok=True)
+    os.makedirs(os.path.join(base_dir, 'static', 'templates'), exist_ok=True)
+    os.makedirs(os.path.join(base_dir, 'static', 'data'), exist_ok=True)
 
     with open(template_path, "wb") as f:
         f.write(template_content)
@@ -122,9 +127,6 @@ def generate_certificates_task(
     certificate_template = Image.open(template_path)
     df = pd.read_excel(excel_path)
 
-    os.makedirs(output_directory_path, exist_ok=True)
-    os.makedirs(output_certificates_path, exist_ok=True)
-    os.makedirs(output_docs_path, exist_ok=True)
     all_certificates_data = []
     
     def generate_qr_code(data, qr_filename):
