@@ -1,8 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QR Certificate Generator
 
-## Getting Started
+A web application built with Next.js and FastAPI that allows you to generate verifiable certificates with QR codes. This tool helps organizations create, manage, and verify digital certificates efficiently.
 
-First, run the development server:
+## Features
+
+-   Generate certificates from templates
+-   Automatic QR code generation for verification
+-   Bulk certificate generation from Excel data
+-   GitHub Pages integration for certificate hosting
+-   Web-based interface for easy management
+-   Verification system through QR codes
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+-   Node.js
+-   Python
+-   pip
+
+You'll also need:
+
+-   A certificate template (PNG/JPG)
+-   An Excel sheet with recipient details
+-   A GitHub account for hosting certificates
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/cbitosc/qr-certificate-generator.git
+cd qr-verifiable-certificate-generator
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+pip install -r requirements.txt
+```
+
+## Usage
+
+1. Start the development server:
 
 ```bash
 npm run dev
@@ -14,23 +55,61 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This command will automatically start both the Next.js frontend and FastAPI backend.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Open your browser and navigate to `http://localhost:3000`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Certificate Generation Process
 
-## Learn More
+1. **Prepare Your Template**
 
-To learn more about Next.js, take a look at the following resources:
+    - Create a certificate template with space for text and QR code
+    - Convert the template to SVG format using tools like [Pixelied PNG to SVG Converter](https://pixelied.com/convert/png-converter/png-to-svg)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Setup GitHub Repository**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    - Create a new public repository on GitHub
+    - Enable GitHub Pages in repository settings
+    - Configure Pages to use the main branch and `/docs` folder
 
-## Deploy on Vercel
+3. **Generate Certificates**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    - Enter your GitHub details to generate the base URL
+    - Upload your certificate template
+    - Import recipient data from Excel
+    - Generate certificates with QR codes
+    - Download the generated `docs` folder
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Deploy Certificates**
+    - Upload the generated `docs` folder to your GitHub repository
+    - Certificates will be accessible via GitHub Pages
+    - QR codes will link to verification pages
+
+## Verification Process
+
+1. Scan the QR code on any certificate
+2. The QR code links to a unique verification page
+3. The verification page displays certificate authenticity and details
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 (GPLv3) - see the [LICENSE](LICENSE) file for details.
+
+This means you are free to:
+
+-   Use this software for any purpose
+-   Change the software to suit your needs
+-   Share the software and your changes with others
+
+Under the following conditions:
+
+-   If you distribute your modified version, you must pass on to the recipients the same freedoms and require them to do the same
+-   You must include the source code, or make it freely available
+-   You must state any significant changes made to the software
+-   You must keep intact all licensing notices
+
+For more details see the [full license text](https://www.gnu.org/licenses/gpl-3.0.en.html).
