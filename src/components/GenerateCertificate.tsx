@@ -24,6 +24,7 @@ const GenerateCertificate = () => {
     const [baseUrl, setBaseUrl] = useState(
         "https://cbitosc.github.io/verify24/reactfastapibootcampFM/?id="
     );
+    const [title, setTitle] = useState("React JS & FastAPI Bootcamp")
     const [templateFile, setTemplateFile] = useState<File | null>(null);
     const [excelFile, setExcelFile] = useState<File | null>(null);
     const [textFormat, setTextFormat] = useState<string>(
@@ -107,6 +108,7 @@ const GenerateCertificate = () => {
             // Merge designData into form data
             const formData = new FormData();
             formData.append("base_url", baseUrl);
+            formData.append("title", title);
             formData.append("template", templateFile as Blob);
             formData.append("overlay_format", textFormat);
             formData.append("svg_template", svgFile as Blob);
@@ -189,6 +191,17 @@ const GenerateCertificate = () => {
             </h1>
             <Separator className="my-8" />
             <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="form-group">
+                    <label htmlFor="title">Title</label>
+                    <Input
+                        type="text"
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="form-control"
+                        required
+                    />
+                </div>
                 <div className="form-group">
                     <label htmlFor="baseUrl">Base URL:</label>
                     <Input

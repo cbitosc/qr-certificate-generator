@@ -38,6 +38,7 @@ class CertificateData(BaseModel):
     json_file_name: str
     json_directory: str
     design_data: DesignData
+    title: str
 
 def modify_svg(svg_content: str, name: str, qr_x: int, qr_y: int, name_x: int, name_y: int, text_color: str, text_height: int, png_dimensions: tuple) -> str:
     parser = etree.XMLParser(remove_blank_text=True, huge_tree=True)
@@ -97,7 +98,8 @@ def generate_certificates_task(
     excel_content: bytes,
     svg_template_content: Optional[bytes],
     date: str,
-    overlay_format:str
+    overlay_format:str,
+    title: str
 ):
     design_data_obj = DesignData(**design_data_dict)
     
@@ -107,6 +109,7 @@ def generate_certificates_task(
     qr_path = os.path.join(base_dir, 'static', 'qr_code.png')
     output_directory_path = os.path.join(base_dir, output_directory)
     output_certificates_path = os.path.join(base_dir, output_directory, "certificates")
+    base_certificates_path = output_certificates_path
     output_docs_path = os.path.join(base_dir, output_directory, "docs" )
     os.makedirs(output_directory_path, exist_ok=True)
     os.makedirs(output_certificates_path, exist_ok=True)
@@ -143,7 +146,7 @@ def generate_certificates_task(
 
     def overlay_qr_code(certificate, text, qr_code, text_position, qr_position, output_filename):
         draw = ImageDraw.Draw(certificate)
-        font_path = os.path.join(base_dir, 'static', 'fonts', 'baskervi.ttf')
+        font_path = os.path.join(base_dir, 'static', 'fonts', 'bask-reg.ttf')
         text_height = int(round(design_data_obj.textSize))
         font = ImageFont.truetype(font_path, text_height)
         text_width = font.getlength(text)
@@ -157,8 +160,14 @@ def generate_certificates_task(
         qr_overlay.paste(qr_code, qr_position, qr_alpha)
         result = Image.alpha_composite(certificate.convert("RGBA"), qr_overlay)
         result.save(output_filename)
-
+    if svg_template_content:
+        svg_content = svg_template_content.decode('utf-8')
+    else:
+        svg_content = ""
     for index, row in df.iterrows():
+        # if not pd.isna(row['Team Number']):
+        #     output_certificates_path = f"{base_certificates_path}/Team-{int(row['Team Number'])}/"
+        #     os.makedirs(output_certificates_path, exist_ok=True)   
         name = row['Name']
         fname = ' '.join(''.join((word[i].upper() if (i == 0 or (i < len(word) - 1 and word[i-1] == '.')) else char.lower()) for i, char in enumerate(word)) for word in name.split())
         code = fname.lower().replace(" ", "").replace(".", "") + code_serial + str(index + codes_start_number).zfill(4)
@@ -181,17 +190,15 @@ def generate_certificates_task(
         output_filename = os.path.join(output_certificates_path, f"{fname}.png")
         overlay_qr_code(certificate_template.copy(), overlay_text, qr_code, text_position, qr_position, output_filename)
         print(f"Certificate for {name} generated")
-        
+        scaleX, scaleY, modified_svg = modify_svg(svg_content, overlay_text, qr_position[0], qr_position[1], text_position[0], text_position[1], design_data_obj.textColor, design_data_obj.textSize, (certificate_template.width, certificate_template.height))
         certificate_data = {
             "code": code,
             "holder": overlay_text,
+            # "svg": modified_svg
         }
         all_certificates_data.append(certificate_data)
 
-    if svg_template_content:
-        svg_content = svg_template_content.decode('utf-8')
-    else:
-        svg_content = ""
+    
 
     if svg_content:
         scaleX, scaleY, modified_svg = modify_svg(svg_content, overlay_text, qr_position[0], qr_position[1], text_position[0], text_position[1], design_data_obj.textColor, design_data_obj.textSize, (certificate_template.width, certificate_template.height))
@@ -213,7 +220,7 @@ def generate_certificates_task(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COSC ReactJS and FastAPI Bootcamp Certificate</title>
+<title>{title}</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -232,7 +239,9 @@ def generate_certificates_task(
             <span id="header-name-element"></span> on {date}
         </p>
     </div>
-    <div>{modified_svg}</div>
+    <div id="svg_id">
+    {modified_svg}
+    </div>
 </div>
 <script
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
@@ -269,6 +278,7 @@ fetch("data.json")
             const certHeader = document.getElementById("cert-header");
             const certificate = document.getElementById("certificate");
 
+
             certHeader.classList.remove("hidden");
             certificate.classList.remove("hidden");
 
@@ -280,6 +290,8 @@ fetch("data.json")
                 height: 384,
                 typeNumber: 8,
                 correctLevel: QRCode.CorrectLevel.H,
+                colorDark: "#000000",
+                colorLight: "#ffffff"
             }});
         }} else {{
             console.error("No matching entry found for the provided code.");
@@ -347,6 +359,7 @@ canvas {{
     width: 100%;
     max-width: {scaledQrSize}px;
     height: auto;
+    display: block;
 }}
 ''')
 
@@ -365,7 +378,8 @@ async def generate_certificates(
     template: UploadFile = File(...),
     excel: UploadFile = File(...),
     date: str = Form(...),
-    svg_template: Optional[UploadFile] = File(None)
+    svg_template: Optional[UploadFile] = File(None),
+    title: str = Form(...)
 ):
     design_data_dict = json.loads(design_data)
 
@@ -387,7 +401,8 @@ async def generate_certificates(
         excel_content,
         svg_template_content,
         date,
-        overlay_format
+        overlay_format,
+        title
     )
     
     return JSONResponse(content={"message": "Certificate generation is running in the background."})
