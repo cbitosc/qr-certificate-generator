@@ -61,6 +61,16 @@ const GenerateCertificate = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [genStatus, setGenStatus] = useState<any>(null);
     const [genCompleted, setGenCompleted] = useState(false);
+    const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    // Cleanup polling interval on unmount to prevent state updates on unmounted component
+    useEffect(() => {
+        return () => {
+            if (pollIntervalRef.current) {
+                clearInterval(pollIntervalRef.current);
+            }
+        };
+    }, []);
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -161,7 +171,9 @@ const GenerateCertificate = () => {
             formData.append("code_serial", codeSerial);
             formData.append("codes_start_number", codesStartNumber.toString());
             formData.append("design_data", JSON.stringify(designData));
-            formData.append("date", date?.toDateString() as string);
+            if (date) {
+                formData.append("date", date.toDateString());
+            }
             formData.append("output_format", outputFormat);
 
             overlays.forEach((ov, i) => {
@@ -189,13 +201,19 @@ const GenerateCertificate = () => {
                 setGenStatus(null);
                 sessionStorage.setItem("latestOutputDir", outputDir);
 
-                const pollStatus = setInterval(async () => {
+                // Clear any existing poll before starting a new one
+                if (pollIntervalRef.current) {
+                    clearInterval(pollIntervalRef.current);
+                }
+
+                pollIntervalRef.current = setInterval(async () => {
                     try {
                         const res = await fetch(`/api/generation-status?output_directory=${encodeURIComponent(outputDir)}`);
                         const data = await res.json();
                         setGenStatus(data);
                         if (data.status === "completed" || data.status === "failed") {
-                            clearInterval(pollStatus);
+                            clearInterval(pollIntervalRef.current!);
+                            pollIntervalRef.current = null;
                             setIsGenerating(false);
                             if (data.status === "completed") {
                                 setGenCompleted(true);
@@ -203,7 +221,8 @@ const GenerateCertificate = () => {
                         }
                     } catch(e) {
                         console.error(e);
-                        clearInterval(pollStatus);
+                        clearInterval(pollIntervalRef.current!);
+                        pollIntervalRef.current = null;
                         setIsGenerating(false);
                     }
                 }, 2000);
@@ -411,6 +430,8 @@ const GenerateCertificate = () => {
                                                         const fontName = `CustomFont_${ov.id}_${Date.now()}`;
                                                         const font = new FontFace(fontName, `url(${fontUrl})`);
                                                         await font.load();
+                                                        // Revoke the blob URL now that the font is loaded into memory
+                                                        URL.revokeObjectURL(fontUrl);
                                                         document.fonts.add(font);
                                                         const updated = [...overlays];
                                                         updated[idx].fontFamily = fontName;

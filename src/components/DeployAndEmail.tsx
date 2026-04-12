@@ -112,7 +112,6 @@ export default function DeployAndEmail() {
             return;
         }
 
-        // @ts-ignore
         const accessToken = session?.accessToken;
         if (!accessToken) {
             alert("You must sign in with Google first to send emails.");

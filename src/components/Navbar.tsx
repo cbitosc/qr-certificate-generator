@@ -41,7 +41,7 @@ const Navbar = () => {
                 <div className="items-center hidden gap-4 md:flex ">
                     <Link
                         className={`duration-300 hover:text-blue-500 ${
-                            pathname == "/" && "text-blue-500"
+                            pathname == "/" ? "text-blue-500" : ""
                         } `}
                         href={"/"}
                     >
@@ -49,7 +49,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                         className={`duration-300 hover:text-blue-500 ${
-                            pathname.includes("/howto") && "text-blue-500"
+                            pathname.includes("/howto") ? "text-blue-500" : ""
                         } `}
                         href={"/howto"}
                     >
@@ -57,7 +57,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                         className={`duration-300 hover:text-blue-500 ${
-                            pathname.includes("/generate") && "text-blue-500"
+                            pathname.includes("/generate") ? "text-blue-500" : ""
                         } `}
                         href={"/generate"}
                     >
@@ -65,7 +65,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                         className={`duration-300 hover:text-blue-500 ${
-                            pathname.includes("/distribute") && "text-blue-500"
+                            pathname.includes("/distribute") ? "text-blue-500" : ""
                         } `}
                         href={"/distribute"}
                     >
@@ -88,7 +88,7 @@ const Navbar = () => {
                     >
                         <DropdownMenuItem
                             asChild
-                            className={`${pathname == "/" && "bg-accent"}`}
+                            className={`${pathname == "/" ? "bg-accent" : ""}`}
                         >
                             <Link className=" w-full" href={"/"}>
                                 Home
@@ -97,7 +97,7 @@ const Navbar = () => {
                         <DropdownMenuItem
                             asChild
                             className={`${
-                                pathname.includes("/howto") && "bg-accent"
+                                pathname.includes("/howto") ? "bg-accent" : ""
                             }`}
                         >
                             <Link className=" w-full" href={"/howto"}>
@@ -107,7 +107,7 @@ const Navbar = () => {
                         <DropdownMenuItem
                             asChild
                             className={`${
-                                pathname.includes("/generate") && "bg-accent"
+                                pathname.includes("/generate") ? "bg-accent" : ""
                             }`}
                         >
                             <Link className=" w-full" href={"/generate"}>
@@ -117,7 +117,7 @@ const Navbar = () => {
                         <DropdownMenuItem
                             asChild
                             className={`${
-                                pathname.includes("/distribute") && "bg-accent"
+                                pathname.includes("/distribute") ? "bg-accent" : ""
                             }`}
                         >
                             <Link className=" w-full" href={"/distribute"}>

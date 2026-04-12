@@ -201,15 +201,15 @@ def generate_certificates_task(
         img = qr.make_image(fill_color="black", back_color="white")
         img.save(qr_filename)
 
-    def overlay_qr_code(certificate, text, qr_code, text_position, qr_position, output_filename, include_qr=True):
+    def overlay_qr_code(certificate, text, qr_code, text_position, qr_position, output_filename, overlay, font_path, include_qr=True):
+        """Draw a single text overlay and optionally composite a QR code onto the certificate."""
         draw = ImageDraw.Draw(certificate)
-        font_path = os.path.join(base_dir, 'static', 'fonts', 'lib-bask.ttf')
-        text_height = int(round(design_data_obj.textSize))
+        text_height = int(round(overlay.textSize))
         font = ImageFont.truetype(font_path, text_height)
         text_width = font.getlength(text)
         text_x = text_position[0] - text_width // 2
         text_y = text_position[1]
-        draw.text((text_x, text_y), text, fill=design_data_obj.textColor, font=font)
+        draw.text((text_x, text_y), text, fill=overlay.textColor, font=font)
         
         if include_qr:
             qr_size = int(round(design_data_obj.qrSize))
@@ -520,8 +520,21 @@ canvas {{
 }}
 ''')
 
-        with open(os.path.join(html_dir, "data.json"), 'a') as json_file:
-            json.dump(all_certificates_data, json_file, indent=2)
+        # Read existing records if the file already exists, then merge and write
+        existing_data = []
+        json_path = os.path.join(html_dir, "data.json")
+        if os.path.exists(json_path):
+            try:
+                with open(json_path, 'r') as _jf:
+                    existing_data = json.load(_jf)
+            except (json.JSONDecodeError, ValueError):
+                existing_data = []
+        # Build a lookup by code so re-runs update existing records rather than duplicating
+        merged = {entry["code"]: entry for entry in existing_data if "code" in entry}
+        for entry in all_certificates_data:
+            merged[entry["code"]] = entry
+        with open(json_path, 'w') as json_file:
+            json.dump(list(merged.values()), json_file, indent=2)
 
         pass
 
