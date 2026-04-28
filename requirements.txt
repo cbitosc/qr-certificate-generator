@@ -8,3 +8,6 @@ openpyxl
 lxml
 pydantic
 python-dateutil
+google-auth
+google-api-python-client
+PyGithub

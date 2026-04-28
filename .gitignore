@@ -35,6 +35,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# generated api output and cache
+/src/api/**/__pycache__/
+/src/api/**/certificates/
+/src/api/**/docs/
+/src/api/*/data.xlsx
 /src/api/static/data
 /src/api/static/templates
 /src/api/static/qr_code.png
